@@ -1,5 +1,5 @@
 ---
-title: "Load Data"
+title: "Data Loading, Cleaning, and Field Description"
 author: "Satrio Wiradika (300578313)"
 date: "`r Sys.Date()`"
 output: html_document
@@ -19,11 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include = FALSE}
 library(pander)
+library(readr)
+casdata = read_csv("https://opendata.arcgis.com/api/v3/datasets/8d684f1841fa4dbea6afaefc8a1ba0fc_0/downloads/data?format=csv&spatialRefId=2193&where=1%3D1")
 ```
 
 ```{r, echo = FALSE}
-casdata = read.csv("../../Datasets/Crash_Analysis_System_(CAS)_data.csv")
-
 casdata$crashDirectionDescription = factor(casdata$crashDirectionDescription, exclude = 'Null')
 casdata$crashSeverity = factor(casdata$crashSeverity, levels=c('N','M', 'S', 'F'))
 casdata$crashSHDescription = as.logical(casdata$crashSHDescription)
