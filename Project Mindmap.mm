@@ -1,9 +1,9 @@
 <map version="freeplane 1.11.5">
 <!--To view this file, download free mind mapping software Freeplane from https://www.freeplane.org -->
-<node TEXT="Question to be Chosen" FOLDED="false" ID="ID_696401721" CREATED="1610381621824" MODIFIED="1691126750696" STYLE="oval">
+<node TEXT="What is the correlation between weather conditions and crash severity of road accidents in different regions in New Zealand?" FOLDED="false" ID="ID_696401721" CREATED="1610381621824" MODIFIED="1691567406056" STYLE="oval">
 <font SIZE="18"/>
-<hook NAME="MapStyle">
-    <properties edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff" fit_to_viewport="false" associatedTemplateLocation="template:/standard-1.6.mm"/>
+<hook NAME="MapStyle" zoom="0.455">
+    <properties edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff" associatedTemplateLocation="template:/standard-1.6.mm" fit_to_viewport="false"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24 pt">
@@ -140,7 +140,7 @@
 <node TEXT="When, and what with?" POSITION="top_or_left" ID="ID_1411479174" CREATED="1691122994863" MODIFIED="1691126798958" HGAP_QUANTITY="-392.49999 pt" VSHIFT_QUANTITY="329.99999 pt">
 <edge COLOR="#ff00ff"/>
 <node TEXT="Resources" ID="ID_1676433747" CREATED="1691125549999" MODIFIED="1691126940243" HGAP_QUANTITY="-195.99999 pt" VSHIFT_QUANTITY="21 pt">
-<node TEXT="Data" ID="ID_1528526145" CREATED="1691126499532" MODIFIED="1691127124129" HGAP_QUANTITY="-118.75 pt" VSHIFT_QUANTITY="3.75 pt">
+<node TEXT="Data" ID="ID_1528526145" CREATED="1691126499532" MODIFIED="1691566853255" HGAP_QUANTITY="-118.75 pt" VSHIFT_QUANTITY="28.35 pt">
 <node TEXT="CAS data" ID="ID_300218708" CREATED="1691126882161" MODIFIED="1691126928009" HGAP_QUANTITY="-108.25 pt" VSHIFT_QUANTITY="-11.25 pt"/>
 <node TEXT="NZ vehicle fleet data" ID="ID_400322234" CREATED="1691126887563" MODIFIED="1691126930348" HGAP_QUANTITY="-142 pt"/>
 <node TEXT="Motor Vehicle Register API" ID="ID_380885987" CREATED="1691126902628" MODIFIED="1691126931934" HGAP_QUANTITY="-163.74999 pt" VSHIFT_QUANTITY="4.5 pt"/>
