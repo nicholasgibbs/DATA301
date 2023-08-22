@@ -24,7 +24,7 @@ casdata = read_csv("https://opendata.arcgis.com/api/v3/datasets/8d684f1841fa4dbe
 
 ```{r, echo = FALSE}
 casdata$crashDirectionDescription = factor(casdata$crashDirectionDescription, exclude = 'Null')
-casdata$crashSeverity = factor(casdata$crashSeverity, levels=c('N','M', 'S', 'F'))
+casdata$crashSeverity = factor(casdata$crashSeverity, levels=c('Non-Injury Crash','Minor Crash', 'Serious Crash', 'Fatal Crash'))
 casdata$crashSHDescription = as.logical(casdata$crashSHDescription)
 casdata$directionRoleDescription = as.factor(casdata$directionRoleDescription)
 casdata$flatHill = factor(casdata$flatHill, exclude = "Null")
