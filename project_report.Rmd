@@ -1,0 +1,43 @@
+---
+title: "Group 6 Exporatory Data Analysis"
+author: "Wian Lusse (300489294), Nicholas Gibbs, Sanrio Wiradikas"
+date: "4 August 2023"
+subtitle: DATA301
+output:
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    fig_caption: yes
+header-includes:
+- \usepackage{bm,bbm}
+- \usepackage{amsmath}
+- \usepackage{fourier,fouriernc}
+- \usepackage{siunitx}
+- \usepackage{algorithm2e,float}
+- \usepackage{color}
+bibliography: references.bib
+classoption: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background and Data
+
+some some. [@edwards1998relationship]
+
+## Ethics, Privacy and Security
+
+## Exporatory Data Analysis
+
+## Individual Contributions
+
+## Overall Report
+
+## References
