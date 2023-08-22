@@ -1,0 +1,29 @@
+---
+title: "Crash Data Exploratory Data Analysis"
+author: "Nicholas Gibbs, Satrio Wiradika, and Wian Lusse"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: null
+  theme: lumen
+  df_print: kable
+  html_document:
+    df_print: paged
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+```{r packages, results = "hide", collapse = TRUE, message = FALSE}
+
+```
+
+# Background and Data
+
+
+
+# Ethics, Privacy and Security
+
