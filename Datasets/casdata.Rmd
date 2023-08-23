@@ -137,4 +137,8 @@ casdata_fd <- data.frame(description = unlist(variable_list), stringsAsFactors =
 pander(casdata_fd)
 
 rm(variable_list)
+
+head(casdata)
+
+write.csv(casdata, file = "casdata.csv", row.names = FALSE)
 ```

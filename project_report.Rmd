@@ -1,43 +1,116 @@
 ---
-title: "Group 6 Exporatory Data Analysis"
-author: "Wian Lusse (300489294), Nicholas Gibbs, Sanrio Wiradikas"
-date: "4 August 2023"
+title: "Group 12 Exploratory Data Analysis"
+author: "Wian Lusse (300489294), Nicholas Gibbs (300579601), Satrio Wiradikas"
+date: "5 September 2023"
 subtitle: DATA301
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    fig_caption: yes
   html_document:
     toc: yes
     toc_depth: '3'
     df_print: paged
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
-    fig_caption: yes
-header-includes:
-- \usepackage{bm,bbm}
-- \usepackage{amsmath}
-- \usepackage{fourier,fouriernc}
-- \usepackage{siunitx}
-- \usepackage{algorithm2e,float}
-- \usepackage{color}
-bibliography: references.bib
-classoption: 12pt
+#header-includes:
+#- \usepackage{bm,bbm}
+#- \usepackage{amsmath}
+#- \usepackage{fourier,fouriernc}
+#- \usepackage{siunitx}
+#- \usepackage{algorithm2e,float}
+#- \usepackage{color}
+#bibliography: references.bib
+#classoption: 12pt
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Background and Data
+\newpage
 
-some some. [@edwards1998relationship]
+```{r packages, results = "hide", collapse = TRUE, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(pander)
+```
+
+
+## Background and Dataa
+
+State which dataset(s) your group worked on, and their source
+
+In our project, we focused our efforts on working with the Crash Analysis System (CAS) data sourced from Waka Kotahi, the New Zealand Transport Agency. The CAS data was accessed through the Open Data platform provided by Waka Kotahi, which offers a comprehensive dataset detailing road crashes that have occurred across New Zealand since the year 2000.
+
+Explain briefly why the dataset is of interest, or what questions it could be used to answer;
+assume that the reader has never heard of your dataset
+
+The significance of the Crash Analysis System (CAS) data lies in its potential to unveil critical insights into road safety, crash patterns, and their intricate connections with various socio-economic and geographic variables in New Zealand. This dataset provides a unique opportunity to explore and address pertinent questions, even for readers unfamiliar with the dataset itself. For instance, we can investigate inquiries such as: What are the primary factors contributing to road crashes in New Zealand? How do crash rates differ across distinct geographical regions and evolve over time? Are there discernible patterns connecting specific vehicle types or road conditions with heightened crash occurrence?.
+
+State the types of data in the dataset(s) and the structure of the dataset(s). Are the data numerical, categorical, or both? Time series? Coordinates? Diagnostic categories? This does NOT need to be an exhaustive list of every variable, just a few comments on the overall types.
+
+```{r}
+str(casdata)
+```
+
+The Crash Analysis System (CAS) data is characterized by its numerical and categorical data types. Numerical attributes encompass various quantitative measures, including crash severity, the count of vehicles involved, and distances. On the categorical side, the dataset features descriptors such as crash types, road conditions, and vehicle types. Furthermore, the geographic aspect is represented through crash location one and crash location two, aswell as the region where the crash took place.
+
+State how complete the dataset(s) are (i.e. how many missing, any structure to the missing data, whether there are errors in the data)
+
+```{r}
+missing_counts <- colSums(is.na(casdata))
+missing_counts
+```
+
+Data completeness within the Crash Analysis System (CAS) data, we discern a variable degree of missing information across the dataset's attributes. While some variables exhibit high completeness, others display more pronounced gaps in data. This variance does not necessarily imply a structured pattern, such as missing data clustered in specific time periods or geographic regions.
 
 ## Ethics, Privacy and Security
 
+Brief discussion of any ethical considerations that apply to your project
+
+Ethical considerations hold a paramount role in our project as we delve into analyzing crash data from Waka Kotahi's Crash Analysis System (CAS). One prominent ethical concern pertains to the potential implications of publicizing the findings of our analysis. Given the sensitive nature of crash data, it is imperative that we exercise discretion in sharing insights that could inadvertently identify individuals involved in accidents. Striking a balance between informative reporting and preserving privacy is essential. Additionally, presenting the data in a way that avoids sensationalizing accidents while focusing on safety improvements is ethically crucial. Acknowledging the broader implications of our findings, particularly when suggesting insights, ensures that our project contributes positively to road safety without causing undue distress to those affected by road accidents.
+
+Brief discussion of any privacy concerns that might arise connected to your project
+
+Privacy concerns are an inherent consideration when dealing with datasets that involve personal information, such as the Crash Analysis System (CAS) data. CAS data contains information about individuals involved in accidents, and demographic datasets might include personal identifiers. Therefore, our project must adhere to stringent privacy regulations to safeguard individual privacy rights. One of the major concerns is ensuring that any data shared or published is anonymized to prevent the identification of specific individuals or vehicles. This entails removing or aggregating any identifying attributes. By diligently addressing these concerns, we can prevent potential breaches of privacy that could arise from the publication of sensitive data.
+
+Brief discussion of what steps you could take to keep your project data and results secure (you do NOT need to carry this out, you just need to talk about it in the report)
+
+To maintain the security of our project data and results, several steps can be taken, even though they have not been implemented for the purpose of this report. First, data encryption protocols can be implemented to safeguard data during storage and transmission. Encryption ensures that unauthorized access to sensitive information is significantly mitigated. Moreover, restricting access to the data is pivotal. Utilizing secure authentication and authorization mechanisms ensures that only authorized personnel can access the project data and results. Regular data backups would help prevent data loss due to unforeseen circumstances. Storing backups securely, ideally in an off-site location, is a best practice. Lastly, utilizing secure data sharing methods, such as secure file sharing platforms or virtual private networks (VPNs), can facilitate collaboration while maintaining data security. By integrating these security measures, we can uphold the integrity and confidentiality of our project data and outcomes.
+
+
 ## Exporatory Data Analysis
 
-## Individual Contributions
+```{r}
+selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
+summary(selected_data)
 
-## Overall Report
+grouped_data <- selected_data %>%
+  group_by(crashSeverity, weatherA, region) %>%
+  summarise(count = n()) %>%
+  arrange(crashSeverity, weatherA, region)
+
+regions <- unique(grouped_data$region)
+
+plots <- list()
+
+for (region in regions) {
+  region_data <- grouped_data[grouped_data$region == region, ]
+  plot <- ggplot(region_data, aes(x = weatherA, y = count, fill = weatherA)) +
+    geom_bar(stat = "identity") +
+    labs(x = "Weather Condition", y = "Count", fill = "Weather Condition", title = paste("Crash Severity in", region, "by Weather Condition")) +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  plots[[region]] <- plot
+}
+
+for (region in regions) {
+  print(plots[[region]])
+}
+```
+
+## Individual Contributions
 
 ## References
