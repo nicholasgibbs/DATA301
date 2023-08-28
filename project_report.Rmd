@@ -4,22 +4,16 @@ author: "Wian Lusse (300489294), Nicholas Gibbs (300579601), Satrio Wiradikas"
 date: "5 September 2023"
 subtitle: DATA301
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    fig_caption: yes
   html_document:
     toc: yes
     toc_depth: '3'
     df_print: paged
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    fig_caption: yes
 #header-includes:
-#- \usepackage{bm,bbm}
-#- \usepackage{amsmath}
-#- \usepackage{fourier,fouriernc}
-#- \usepackage{siunitx}
-#- \usepackage{algorithm2e,float}
-#- \usepackage{color}
-#bibliography: references.bib
+bibliography: references.bib
 #classoption: 12pt
 ---
 
@@ -34,7 +28,11 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 library(pander)
+library(knitr)
+library(gridExtra)
 ```
+
+
 
 
 ## Background and Dataa
@@ -82,6 +80,8 @@ To maintain the security of our project data and results, several steps can be t
 
 ## Exporatory Data Analysis
 
+
+
 ```{r}
 selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
 summary(selected_data)
@@ -111,6 +111,155 @@ for (region in regions) {
 }
 ```
 
+The above graphs shows that fine weather is present at most accidents with light rain being present at the second most accidents.
+
+
+```{r}
+crash_sev_weather <- casdata %>%
+  filter(weatherA == "Light rain") %>%
+  group_by(weatherA, crashSeverity) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
+ggplot(crash_sev_weather, aes(x = crashSeverity, y = count, fill = crashSeverity)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ weatherA, scales = "free_x") +
+  labs(x = "Crash Severity", y = "Count", fill = "Severity", title = "Crash severity across all regions by strong winds") +
+  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+                               "Minor Crash" = "green",
+                               "Serious Crash" = "orange",
+                               "Fatal Crash" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+
+
+**Exploring the effect of wind on the severity of car crashes**
+
+Strong winds can play a role in increasing the risk of accidents and potentially be a cause of fatal or serious car crashes. Strong winds can pose multiple hazards on the road. High winds can lead to sudden obstacles on the road and can also turn loose debris like rock into projectiles. High winds can also reduce vehicle control making it harder to stay in lanes safely or even be able to push large vehicles off the side of the road. According to this study in 2019 [@bhattachan2019characterizing], the fatality rate related to winds is almost twice as high as the rate in accident caused my weather conditions other than winds. This might suggest that wind-related accidents tend to be more lethal compared to accidents caused my other type of weather.
+
+```{r}
+
+crash_sev_weather <- casdata %>%
+  filter(weatherB == "Strong wind") %>%
+  group_by(weatherB, crashSeverity) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
+ggplot(crash_sev_weather, aes(x = crashSeverity, y = count, fill = crashSeverity)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ weatherB, scales = "free_x") +
+  labs(x = "Crash Severity", y = "Count", fill = "Severity", title = "Crash severity across all regions by strong winds") +
+  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+                               "Minor Crash" = "green",
+                               "Serious Crash" = "orange",
+                               "Fatal Crash" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+
+```
+```{r, echo = FALSE}
+strong_wind_data <- casdata %>%
+  filter(weatherB == "Strong wind")
+
+crash_severity_counts <- strong_wind_data %>%
+  group_by(crashSeverity) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+kable(crash_severity_counts, format = "markdown", 
+      caption = "Counts of Crash Severity Levels for Strong Wind Cases")
+```
+
+```{r}
+crash_sev_weather <- casdata %>%
+  filter(weatherB == "Strong wind") %>%
+  group_by(weatherB, crashSeverity, region) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
+
+ggplot(crash_sev_weather, aes(x = weatherB, y = count, fill = crashSeverity)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~region, ncol = 5)
+  labs(x = "Weather Condition", y = "Count", fill = "Severity") +
+  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+                               "Minor Crash" = "green",
+                               "Serious Crash" = "orange",
+                               "Fatal Crash" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+
+
+
+
+```
+```{r, echo = FALSE}
+strong_wind_datreg <- casdata %>%
+  filter(weatherB == "Strong wind")
+
+crash_severity_counts <- strong_wind_data_reg %>%
+  group_by(crashSeverity, region) %>%
+  summarise(count = n()) %>%
+  
+   filter(!is.na(region)) %>%
+  arrange(region, desc(count))
+
+kable(crash_severity_counts, format = "markdown", 
+      caption = "Counts of Crash Severity Levels for Strong Wind Cases by Region")
+```
+
+**Comparing light rain to strong winds**
+
+
+```{r}
+crash_sev_winds <- casdata %>%
+  filter(weatherB == "Strong wind") %>%
+  group_by(weatherB, crashSeverity) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
+crash_sev_rain <- casdata %>%
+  filter(weatherA == "Light rain") %>%
+  group_by(weatherA, crashSeverity) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
+plot1 <- ggplot(crash_sev_rain, aes(x = weatherA, y = count, fill = crashSeverity)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Light rain", y = "Count", fill = "Severity") +
+  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+                               "Minor Crash" = "green",
+                               "Serious Crash" = "orange",
+                               "Fatal Crash" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+plot2 <- ggplot(crash_sev_winds, aes(x = weatherB, y = count, fill = crashSeverity)) +
+  geom_bar(stat = "identity") +
+  labs(x = "String winds", y = "Count", fill = "Severity") +
+  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+                               "Minor Crash" = "green",
+                               "Serious Crash" = "orange",
+                               "Fatal Crash" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+Light rain is present in 5 times more fatal accidents than where strong winds were present. 
+
+
+
+```{r}
+head(casdata)
+
+```
 ## Individual Contributions
 
 ## References
