@@ -45,6 +45,7 @@ casdata$weatherB[casdata$weatherB == "Null" | casdata$weatherB == "None"] = "Unk
 casdata$weatherB = as.factor(casdata$weatherB)
 
 casdata = subset(casdata, select=-c(crashRoadSideRoad, intersection))
+write.csv(casdata, file = "casdata.csv", row.names = FALSE)
 
 pander(summary(casdata))
 ```
@@ -137,8 +138,5 @@ casdata_fd <- data.frame(description = unlist(variable_list), stringsAsFactors =
 pander(casdata_fd)
 
 rm(variable_list)
-
-head(casdata)
-
-write.csv(casdata, file = "casdata.csv", row.names = FALSE)
+rm(casdata_fd)
 ```
