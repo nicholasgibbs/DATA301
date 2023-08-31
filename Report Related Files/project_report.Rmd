@@ -100,7 +100,67 @@ To maintain the security of our project data and results, several steps can be t
 
 **Exploring the effect of weather conditions on the severity of vehicle crashes** $\\$
 
-Adverse weather conditions play a crucial role in shaping the dynamics of road safety, significantly amplifying the potential for accidents to escalate into fatal or critical events. These environmental factors introduce a complex set of challenges that drivers must navigate through, demanding heightened vigilance, skill, and adaptability. The impact of severe weather encompassing heavy rainfall, snow, and fog, extends beyond just the inconvenience; it directly interacts with the systems that govern road safety, creating an environment that demands caution from vehicle users. The relationship between road users and adverse weather begins with heavy rainfall. The raindrops can obscure the visions to an extent where recognizing other vehicles, pedestrians or road signs becomes a difficult task. The rain drops on the windshield refract light, which leads to distorted perceptions of distance and size. This compromised visibility heightens the risk of collisions, particularly due to the reduced reaction time available to drivers when unexpected hazards emerge. Moreover, the road surface undergoes a transformation, transitioning from a stable grip to slippery, the combination of water and residue on the road can significantly diminish the coefficient of friction between the tires and the pavement, leading to an increased stopping distance and a heightened potential for skidding, and loss of control. The entrance of snow into the equation brings a new set of challenges. Snow-covered roads not only impair the driver's ability to see road markings but also introduce an element of uncertainty. The subtle layers of snow can conceal underlying ice patches, rendering roads unpredictably slick. Maneuvering becomes a difficult act, steering or sudden braking can result in a loss of control, causing vehicles to slide uncontrollably. Additionally, the accumulation of snow can narrow roadways, reducing the space and further elevating the risk of unintended contact between vehicles. Fog serves as the disruption of the visibility is dramatically reduced, often extending to a few meters ahead. This drastically impairs the driver's ability to anticipate the road's trajectory and the presence of obstacles in their path. The limited field of vision forces drivers to slow down significantly often well below the speed limit. However, not all drivers might respond to the altered conditions in a timely and appropriate manner, potentially leading to abrupt braking and inadequate braking distances. According to a study conducted in 2019 [@riskofroad2019], the relative accident risks are increased for poor road weather conditions; however, they are highest for icy rain and slippery and very slippery road conditions. Especially those stemming from extreme weather, are more likely to result in grave consequences compared to accidents unaffected by adverse weather.
+Adverse weather conditions play a crucial role in shaping the dynamics of road safety, significantly amplifying the potential for accidents to escalate into fatal or critical events. These environmental factors introduce a complex set of challenges that drivers must navigate through, demanding heightened vigilance, skill, and adaptability. The impact of severe weather encompassing heavy rainfall, snow, and fog, extends beyond just the inconvenience; it directly interacts with the systems that govern road safety, creating an environment that demands caution from vehicle users. $\\$
+
+```{r collapse = TRUE, message = FALSE, echo = FALSE}
+selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
+
+grouped_data <- selected_data %>%
+  group_by(crashSeverity, weatherA, region) %>%
+  summarise(count = n()) %>%
+  arrange(crashSeverity, weatherA, region)
+
+regions <- unique(grouped_data$region)
+regions <- regions[0:16]
+```
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
+regions <- unique(grouped_data$region)
+
+grouped_data$region_facet <- factor(grouped_data$region, levels = regions)
+
+#ggplot(grouped_data, aes(x = weatherA, y = count, fill = crashSeverity)) +
+#  geom_bar(stat = "identity") +
+#  labs(x = "Weather Condition", y = "Count", fill = "Crash #Severity") +
+#  theme_minimal() +
+#  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, #hjust = 1),
+#        legend.title = element_blank(),
+#        legend.key.size = unit(0.5, "lines"),
+#        legend.text = element_text(size = 8)) +
+#  facet_wrap(~ region_facet, ncol = 4)
+```
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
+generate_region_plots <- function(grouped_data, selected_regions, ncol = 4) {
+  plots <- list()
+
+  for (region in selected_regions) {
+    region_data <- grouped_data[grouped_data$region == region, ]
+    plot <- ggplot(region_data, aes(x = weatherA, y = count, fill = crashSeverity)) +
+      geom_bar(stat = "identity") +
+      labs(x = "Weather Condition", y = "Count", fill = "Crash Severity", subtitle = region) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+            legend.title = element_blank(),
+            legend.key.size = unit(0.5, "lines"),
+            legend.text = element_text(size = 8))
+
+    plots[[region]] <- plot
+  }
+
+  combined_plots <- wrap_plots(plots, ncol = ncol) +
+    plot_layout(guides = 'collect') +
+    plot_annotation(title = "Crash Severity by Weather Condition", theme = theme(plot.title = element_text(hjust = 0.5)))
+
+  return(combined_plots)
+}
+```
+
+```{r fig.height =5, fig.width = 10, echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
+generate_region_plots(grouped_data, head(regions[regions %in% c("Auckland Region", "Wellington Region", "Gisborne Region", "Manawatū-Whanganui Region")]), ncol = 2)
+```
+
+The relationship between road users and adverse weather begins with heavy rainfall. The raindrops can obscure the visions to an extent where recognizing other vehicles, pedestrians or road signs becomes a difficult task. The rain drops on the windshield refract light, which leads to distorted perceptions of distance and size. This compromised visibility heightens the risk of collisions, particularly due to the reduced reaction time available to drivers when unexpected hazards emerge. Moreover, the road surface undergoes a transformation, transitioning from a stable grip to slippery, the combination of water and residue on the road can significantly diminish the coefficient of friction between the tires and the pavement, leading to an increased stopping distance and a heightened potential for skidding, and loss of control. The entrance of snow into the equation brings a new set of challenges. Snow-covered roads not only impair the driver's ability to see road markings but also introduce an element of uncertainty. The subtle layers of snow can conceal underlying ice patches, rendering roads unpredictably slick. Maneuvering becomes a difficult act, steering or sudden braking can result in a loss of control, causing vehicles to slide uncontrollably. Additionally, the accumulation of snow can narrow roadways, reducing the space and further elevating the risk of unintended contact between vehicles. Fog serves as the disruption of the visibility is dramatically reduced, often extending to a few meters ahead. This drastically impairs the driver's ability to anticipate the road's trajectory and the presence of obstacles in their path. The limited field of vision forces drivers to slow down significantly often well below the speed limit. However, not all drivers might respond to the altered conditions in a timely and appropriate manner, potentially leading to abrupt braking and inadequate braking distances. According to a study conducted in 2019 [@riskofroad2019], the relative accident risks are increased for poor road weather conditions; however, they are highest for icy rain and slippery and very slippery road conditions. Especially those stemming from extreme weather, are more likely to result in grave consequences compared to accidents unaffected by adverse weather.
 ```{r collapse = TRUE, message = FALSE, echo = FALSE}
 selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
 
