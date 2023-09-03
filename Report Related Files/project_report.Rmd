@@ -33,6 +33,7 @@ library(pander)
 library(knitr)
 library(gridExtra)
 library(patchwork)
+library(treemap)
 ```
 
 ```{r echo = FALSE}
@@ -136,18 +137,21 @@ crash_sev_weather <- casdata %>%
   summarise(count = n(), .groups = "drop") %>%
   ungroup()
 
-ggplot(crash_sev_weather, aes(x = crashSeverity, y = count, fill = crashSeverity)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ weatherB, scales = "free_x") +
-  labs(x = "Crash Severity", y = "Count", fill = "Severity") +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
-  theme_minimal() +
-  theme(legend.position = "right")
+#ggplot(crash_sev_weather, aes(x = crashSeverity, y = count, fill = crashSeverity)) +
+#  geom_bar(stat = "identity") +
+#  facet_wrap(~ weatherB, scales = "free_x") +
+#  labs(x = "Crash Severity", y = "Count", fill = "Severity") +
+#  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
+#                               "Minor Crash" = "green",
+#                               "Serious Crash" = "orange",
+#                               "Fatal Crash" = "red")) +
+#  theme_minimal() +
+#  theme(legend.position = "right")
 
-
+treemap(crash_sev_weather,
+        index="crashSeverity",
+        vSize="count",
+        type="index")
 ```
 
 Strong winds can play a role in increasing the risk of accidents and potentially be a cause of fatal or serious vehicle crashes. Strong winds can pose multiple hazards on the road. High winds can lead to sudden obstacles on the road and can also turn loose debris like rock into projectiles. High winds can also reduce vehicle control making it harder to stay in lanes safely or even be able to push large vehicles off the side of the road. According to this study in 2019 [@bhattachan2019characterizing], the fatality rate related to winds is almost twice as high as the rate in accident caused my weather conditions other than winds. This might suggest that wind-related accidents tend to be more lethal compared to accidents caused my other type of weather. 
