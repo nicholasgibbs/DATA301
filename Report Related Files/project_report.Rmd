@@ -106,26 +106,8 @@ To maintain the security of our project data and results, several steps can be t
 
 Adverse weather conditions play a crucial role in shaping the dynamics of road safety, significantly amplifying the potential for accidents to escalate into fatal or critical events. These environmental factors introduce a complex set of challenges that drivers must navigate through, demanding heightened vigilance, skill, and adaptability. The impact of severe weather encompassing heavy rainfall, snow, and fog, extends beyond just the inconvenience; it directly interacts with the systems that govern road safety, creating an environment that demands caution from vehicle users.
 
-```{r collapse = TRUE, message = FALSE, echo = FALSE}
-selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
-
-grouped_data <- selected_data %>%
-  group_by(crashSeverity, weatherA, region) %>%
-  summarise(count = n()) %>%
-  arrange(crashSeverity, weatherA, region)
-
-regions <- unique(grouped_data$region)
-regions <- regions[0:16]
-```
-
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
-regions <- unique(grouped_data$region)
-
-grouped_data$region_facet <- factor(grouped_data$region, levels = regions)
-```
-
 ```{r fig.height =6, fig.width = 12, echo = FALSE, message = FALSE, warning = FALSE, fig.cap="The Distribution of Weather Conditions in the Regions of New Zealand"}
-ggplot(grouped_data, aes(x = region, fill = weatherA)) +
+ggplot(casdata, aes(x = region, fill = weatherA)) +
   geom_bar(stat = "count") +
   scale_x_discrete(labels = function(x) gsub(" Region", "", x)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
