@@ -2,7 +2,6 @@
 title: "Group 12 Exploratory Data Analysis"
 author: "Wian Lusse (300489294), Nicholas Gibbs (300579601), Satrio Wiradika (300578313)"
 date: "5 September 2023"
-subtitle: DATA301
 output:
   pdf_document:
     toc: yes
@@ -12,10 +11,12 @@ output:
     toc: yes
     toc_depth: '3'
     df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '3'
+subtitle: DATA301
 fontsize: 11pt
-header-includes:
-  \usepackage{float}
-  \floatplacement{figure}{H}
+header-includes: \usepackage{float} \floatplacement{figure}{H}
 bibliography: references.bib
 ---
 
@@ -119,32 +120,40 @@ regions <- unique(grouped_data$region)
 grouped_data$region_facet <- factor(grouped_data$region, levels = regions)
 ```
 
-```{r fig.height = 6, fig.width = 12, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "The Distribution of Weather Conditions in the Regions of New Zealand"}
+```{r fig.height = 6, fig.width = 12, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Bar chart showing the distribution of weather conditions in regions of New Zealand."}
 ggplot(casdata, aes(x = region, fill = weatherA)) +
   geom_bar(stat = "count") +
   scale_x_discrete(labels = function(x) gsub(" Region", "", x)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Weather Condition Distribution by Region in New Zealand") +
+  xlab("Regions") +
+  ylab("Counts") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_y_continuous(
+    breaks = seq(0, 5000000, by = 50000))
 ```
 
-The provided data presents weather-related information categorised by region. Several key patterns and conclusions can be drawn from this dataset. Firstly, the "Fine" weather condition is prevalent across most regions, with Auckland Region, Bay of Plenty Region, Canterbury Region, and many others reporting substantial counts under this category. On the other hand, "Hail or Sleet" conditions are relatively rare across all regions, indicating infrequent occurrences of such extreme weather events. Secondly, "Heavy rain" and "Light rain" are prevalent conditions in many regions, suggesting a significant amount of precipitation is experienced throughout New Zealand. These regions include Auckland, Canterbury, Gisborne, Hawke's Bay, Manawatū-Whanganui, Northland, Otago, Taranaki, Tasman, Waikato, Wellington, and West Coast. Thirdly, "Mist or Fog" conditions are reported in various regions, but the counts are relatively lower compared to other weather conditions. Snowfall is infrequent, mainly occurring in limited quantities in certain regions like Auckland, Bay of Plenty, Canterbury, Gisborne, Hawke's Bay, Manawatū-Whanganui, Nelson, Otago, Southland, Taranaki, Tasman, Waikato, Wellington, and West Coast. Lastly, the "Unknown" category suggests that in some instances, weather conditions were not clearly identified or recorded. Overall, this data highlights the diverse weather conditions experienced across different regions in New Zealand, with variations in the prevalence of specific weather patterns. $\\$
+In Figure 1 the "Fine" weather condition is prevalent across most regions, with Auckland Region, Bay of Plenty Region, Canterbury Region, and many others reporting substantial counts under this category. On the other hand, "Hail or Sleet" conditions are relatively rare across all regions, indicating infrequent occurrences of such extreme weather events. Secondly, "Heavy rain" and "Light rain" are prevalent conditions in many regions, suggesting a significant amount of precipitation is experienced throughout New Zealand. Thirdly, "Mist or Fog" conditions are reported in various regions, but the counts are relatively lower compared to other weather conditions. Snowfall is infrequent, mainly occurring in limited quantities in certain regions. And lastly, the "Unknown" category suggests that in some instances, weather conditions were not clearly identified or recorded. Overall, this highlights the diverse weather conditions experienced across different regions in New Zealand, with variations in the prevalence of specific weather patterns. $\\$
 
 **Is There Any Difference on the Level of Each Crash Severity Between the Regions?**
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Percentage Grouped Bar Chart of Crash Severity by Region"}
+```{r echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Horizontal bar chart showing the distribution of crash severity by region."}
 ggplot(as.data.frame(prop.table(table(casdata[c("region", "crashSeverity")]), 1) * 100) %>% group_by(region), aes(x = region, fill = crashSeverity, y = Freq)) +
   geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.7) +
   labs(x = "Region", y = "Percentage") +
   theme_minimal() +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Regional Distribution of Crash Severity") +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The plot of the percentage of crash severity by region in New Zealand, allows us to see how the distribution varies between regions. Specifically, it presents a breakdown of road crash severity across the various regions in New Zealand. There is a notable variation in crash severity patterns across New Zealand regions, with some regions experiencing a higher prevalence of non-injury and minor crashes, while others have a relatively higher proportion of serious and fatal crashes. These differences may be influenced by factors such as local road conditions, traffic density, and enforcement efforts. Auckland stands out with a high percentage 75.01% of non-injury crashes, suggesting a higher frequency of less severe accidents. Serious and fatal crashes are comparatively lower. Bay of Plenty also has a substantial share of non-injury crashes 70.96% but a somewhat higher percentage of minor crashes 21.54% compared to Auckland, making it relatively safer. Canterbury has a significant number of non-injury crashes 64.11%, but it also experiences a higher proportion of serious crashes 7.51% compared to some other regions. Gisborne and Hawke's Bay both prioritise dealing with less severe incidents, with a focus on non-injury and minor crashes, resulting in lower percentages of serious and fatal crashes. Northland has a relatively higher percentage of serious crashes 7.53%, indicating a potential need for improved safety measures. Otago experiences a higher percentage of both minor and serious crashes compared to other regions, suggesting a need for improved safety awareness. Tasman has a lower percentage of fatal and serious crashes, indicating a safer driving environment with a focus on minor and non-injury incidents. These regional variations may be influenced by factors such as local road conditions, traffic density, and law enforcement efforts. Further analysis may be needed to understand the underlying causes. $\\$
+In Figure 2 there is a notable variation in crash severity patterns across regions, with some regions experiencing a higher prevalence of non-injury and minor crashes, while others have a relatively higher proportion of serious and fatal crashes. These differences may be influenced by factors such as local road conditions, traffic density, and enforcement efforts. Auckland stands out with a high percentage of non-injury crashes, suggesting a higher frequency of less severe accidents. Serious and fatal crashes are comparatively lower. Bay of Plenty also has a substantial share of non-injury crashes but a somewhat higher percentage of minor crashes compared to Auckland. Canterbury has a significant number of non-injury crashes, but it also experiences a higher proportion of serious crashes compared to some other regions. Gisborne and Hawke's Bay both deal with less severe incidents, with a focus on non-injury and minor crashes, resulting in lower percentages of serious and fatal crashes. Northland has a relatively higher percentage of serious crashes, indicating a potential need for improved safety measures. Otago experiences a higher percentage of both minor and serious crashes compared to other regions, suggesting a need for improved safety awareness. Tasman has a lower percentage of fatal and serious crashes, indicating a safer driving environment with a focus on minor and non-injury incidents. These regional variations may be influenced by factors such as local road conditions, traffic density, and law enforcement efforts, highlighting that further analysis is needed to understand the underlying causes. $\\$
 
 **Exploring the Effect of Wind on the Severity of Vehicle Crashes** $\\$
 
 Strong winds can play a role in increasing the risk of accidents and potentially be a cause of fatal or serious vehicle crashes. Strong winds can pose multiple hazards on the road. High winds can lead to sudden obstacles on the road and can also turn loose debris like rock into projectiles. High winds can also reduce vehicle control making it harder to stay in lanes safely or even be able to push large vehicles off the side of the road. According to this study in 2019 [@bhattachan2019characterizing], the fatality rate related to winds is almost twice as high as the rate in accident caused my weather conditions other than winds. This might suggest that wind-related accidents tend to be more lethal compared to accidents caused by other type of weather. 
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap = "Crash Severity Across All Regions by Strong Winds"}
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap = "Treemap showing the distribution of crash severity within the context of strong wind conditions."}
 crash_sev_weather <- casdata %>%
   filter(weatherB == "Strong wind") %>%
   group_by(weatherB, crashSeverity) %>%
@@ -152,9 +161,10 @@ crash_sev_weather <- casdata %>%
   ungroup()
 
 treemap(crash_sev_weather,
-        index="crashSeverity",
-        vSize="count",
-        type="index")
+        index = "crashSeverity",
+        vSize = "count",
+        type = "index",
+        title = "Distribution of Crash Severity in Strong Wind Conditions")
 ```
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
@@ -170,9 +180,9 @@ kable(crash_severity_counts, format = "markdown",
       caption = "Counts of Crash Severity Levels for Strong Wind Cases")
 ```
 
-The data plotted in Figure 3 and displayed in Table 3 presents a breakdown of crash severity levels in cases affected by strong winds. The most prevalent outcome is non-injury crashes, with a count of 9489 cases, indicating that strong wind conditions more commonly result in accidents where no injuries are reported. Following this, minor crashes account for 3632 cases, suggesting a substantial number of incidents with minor injuries or property damage. Serious crashes are less frequent, with 1074 cases, indicating that strong winds can lead to more severe accidents, but these are relatively rare in comparison to non-injury and minor crashes. The least frequent outcome is fatal crashes, with a count of 194, signifying that fatalities due to strong wind-related accidents are relatively infrequent. In conclusion, this data emphasises the importance of caution and preparation during strong wind conditions, as they can lead to a range of crash severity, with non-injury and minor crashes being the most common outcomes, while serious and fatal crashes are less frequent but still significant concerns for road safety. $\\$
+In Figure 3 and Table 3 the most prevalent outcome is non-injury crashes, indicating that strong wind conditions more commonly result in accidents where no injuries are reported. Following this, minor crashes account for the second most, suggesting a substantial number of incidents with minor injuries or property damage. Serious crashes are less frequent, indicating that strong winds can lead to more severe accidents, but these are relatively rare in comparison to non-injury and minor crashes. The least frequent outcome is fatal crashes, signifying that fatalities due to strong wind-related accidents are relatively infrequent. The caution during strong wind conditions, as they can lead to a range of crash severity, with non-injury and minor crashes being the most common outcomes, while serious and fatal crashes are less frequent but still significant concerns. $\\$
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap = "Crash Severity in Each Region for Strong Wind Condition", results = 'hide', fig.keep = 'all'}
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, results = 'hide', fig.keep = 'all', fig.cap = "Multi-faceted bar chart showing the distribution of crash severity across different weather conditions in various regions."}
 crash_sev_weather <- casdata %>%
   filter(weatherB == "Strong wind") %>%
   group_by(weatherB, crashSeverity, region) %>%
@@ -185,57 +195,48 @@ crash_sev_weather$region <- temp(crash_sev_weather$region)
 
 ggplot(crash_sev_weather, aes(x = weatherB, y = count, fill = crashSeverity)) +
   geom_bar(stat = "identity") +
-  facet_wrap(~region, ncol = 5)
+  facet_wrap(~region, ncol = 5) +
   labs(x = "Weather Condition", y = "Count", fill = "Severity") +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
   theme_minimal() +
-  theme(legend.position = "right")
+  theme(legend.position = "right", plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Crash Severity by Weather Condition in Regions Affected by Strong Winds") +
+  xlab("Regions") +
+  ylab("Counts")
 ```
 
-The data plotted in Figure 4 reveals the crash severity in various regions during strong wind conditions. In Auckland, strong winds resulted in 27 fatal crashes, while Bay of Plenty had 5, Canterbury had 24, Gisborne had 2, and Hawke's Bay had 12 fatal crashes. Manawatū-Whanganui experienced 26 fatal crashes, Marlborough had 5, Northland had 8, Otago had 18, and Southland had 14 fatal crashes during strong winds. In contrast, minor crashes during strong wind conditions were more prevalent, with Auckland reporting 789, Bay of Plenty 152, Canterbury 340, Gisborne 42, Hawke's Bay 109, and Manawatū-Whanganui 317. The trend continued with other regions, including Nelson 22, Northland 190, Otago 275, Southland 227, Taranaki 127, Tasman 29, Waikato 368, Wellington 550, and West Coast 30. Furthermore, non-injury crashes were significantly higher in frequency, with Auckland leading at 2271, followed by Bay of Plenty at 418, Canterbury at 760, Gisborne at 130, and others. Serious crashes were less common, with Auckland having 198, Bay of Plenty 43, and Canterbury 116. Gisborne, Hawke's Bay, Manawatū-Whanganui, and other regions also reported varying numbers of serious crashes. These data suggest that strong wind conditions generally lead to a higher incidence of minor and non-injury crashes, while fatal and serious crashes are relatively rarer occurrences. $\\$
+In Figure 4 Strong wind is associated with accidents of varying severity levels, from Fatal to Non-Injury and Serious Crashes. This suggests that adverse weather conditions, such as strong winds, can lead to a wide range of road accidents, and severity may depend on other factors like road infrastructure, driver behavior, and emergency response. The Auckland Region consistently appears across all severity levels, indicating that it is particularly affected by accidents during strong wind conditions. This might be due to higher population density and traffic volume in Auckland, making it more susceptible to accidents during adverse weather. Also that some regions, like Tasman and West Coast, have relatively lower accident counts across all severity levels, possibly due to their geographic location and lower population density. These data suggest that strong wind conditions generally lead to a higher incidence of minor and non-injury crashes, while fatal and serious crashes are relatively rarer occurrences. $\\$
 
-**Comparing Light Rain to Strong Wind**
+**Comparing Light Rain to Strong Wind** $\\$
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap="Crash Severity Distribution for Frost and Strong Wind Condition"}
-crash_sev_winds <- casdata %>%
-  filter(weatherB == "Strong wind") %>%
-  group_by(weatherB, crashSeverity) %>%
-  summarise(count = n(), .groups = "drop") %>%
-  ungroup()
-
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, results = 'hide', fig.keep = 'all', fig.cap = "Grouped bar chart showing a comparison of crash severity in two distinct weather conditions."}
 crash_sev_rain <- casdata %>%
   filter(weatherB == "Frost") %>%
   group_by(weatherB, crashSeverity) %>%
   summarise(count = n(), .groups = "drop") %>%
   ungroup()
 
+crash_sev_winds <- casdata %>%
+  filter(weatherB == "Strong wind") %>%
+  group_by(weatherB, crashSeverity) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  ungroup()
+
 plot1 <- ggplot(crash_sev_rain, aes(x = weatherB, y = count, fill = crashSeverity)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ggtitle("Crash Severity by Frosty Weather") +
+  theme(plot.title = element_text(hjust = 0.5))
 
 plot2 <- ggplot(crash_sev_winds, aes(x = weatherB, y = count, fill = crashSeverity)) +
   geom_bar(stat = "identity")  +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ggtitle("Crash Severity by Strong Wind") +
+  theme(plot.title = element_text(hjust = 0.5))
 
 plot1_legend <- ggplot(crash_sev_rain, aes(x = weatherB, y = count, fill = crashSeverity)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -252,20 +253,20 @@ combined_plot <- grid.arrange(plot1, plot2, ncol = 2)
 grid.arrange(combined_plot, legend, nrow = 2, heights = c(10, 1))
 ```
 
-Further analysis of crash severity data in different regions under frost and strong wind conditions provides additional insights. In frosty weather, there were 86 fatal crashes, indicating a significant risk to life, while strong wind conditions led to 194 fatal crashes, suggesting a higher fatality rate under strong winds. However, frost conditions also saw 604 serious crashes, which is noteworthy and potentially indicative of more severe accidents overall. In contrast, strong wind conditions had 1,074 serious crashes, indicating a higher propensity for serious accidents. Nonetheless, frosty weather conditions yielded a substantially larger number of non-injury crashes at 6,064 compared to 9,489 non-injury crashes during strong wind conditions. This indicates that while strong winds may lead to more severe accidents, frosty weather results in a higher number of accidents without injuries. 
+In Figure 5 both Frost and Strong Wind have a notable impact on road safety. They are associated with different crash severity levels, indicating that adverse weather conditions can lead to a range of accidents, from minor incidents to more serious and potentially fatal crashes. It's clear that Non-Injury Crashes are the most common type of accidents in both weather conditions, suggesting that a significant portion of accidents in these conditions do not result in injuries. However, Frost seems to have a higher proportion of Fatal and Serious Crashes compared to Strong Wind. This could be due to the unique challenges posed by icy road conditions in Frost, which may result in more severe accidents. The number of accidents is generally higher during Frost conditions. This could be attributed to the fact that Frost may be a more common weather condition in the given location or time frame, or it may reflect the increased difficulty of driving in icy conditions. Strong Wind, on the other hand, appears to be associated with a higher number of accidents across all severity levels compared to Frost. This could be due to the challenges posed by strong winds, such as reduced vehicle stability and visibility, which can lead to a higher likelihood of accidents. This indicates that while strong winds may lead to more severe accidents, frosty weather results in a higher number of accidents without injuries. 
 
 ## Individual Contributions
 
 **Wian Lusse (300489294)** $\\$
 
-Wian Lusse made significant contributions to the project, particularly in the area of data analysis and visualization. Their role primarily involved handling references and creating wind plots. Wian's work on managing references was crucial for the project. They likely organized and cited sources, ensuring that the project was well-researched and credible. Proper referencing is vital in any research or data analysis project to give credit to original sources and avoid plagiarism. Also helping create wind plots suggests that Wian was involved in visualizing weather data related to wind patterns. Wind plots were essential in understanding how wind conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between wind types and crash severity. $\\$
+Wian Lusse individual contribution to the project focused on the area of data analysis and visualization. Wians role primarily involved handling references and creating wind plots. Wian's work on managing references was crucial for the project, organizing and citing sources, ensuring that the project was well-researched and credible. Proper referencing is vital in any research or data analysis project to give credit to original sources and avoid plagiarism. Also helping create plots relating to wind conditions involved in visualizing weather data related to wind conditions. Wind condition plots were helpful in understanding how wind conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between wind conditions and crash severity. $\\$
 
 **Nicholas Gibbs (300579601)** $\\$
 
-Nicholas Gibbs played a pivotal role in setting up and maintaining the project's version control and contributed to weather data visualization. The creation of a GitHub repository indicates that they were responsible for managing the project's version control. This is a critical task in collaborative projects as it allows team members to work on code or documents simultaneously without conflicts. It also ensures that a history of changes is maintained, facilitating collaboration and troubleshooting. Like Wian, Nicholas was involved in the creation of weather plots and helped in the wind plots. Weather plots are essential for conveying complex weather data in a visually accessible format. Weather plots were essential in understanding how wind conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between weather types and crash severity. $\\$
+Nicholas Gibbs individual contribution to the project focused on setting up and maintaining the project's version control and contributed to weather conditions data visualization. The creation of a GitHub repository made him responsible for managing the project's version control. A critical task in a collaborative project as it allows for team members to work on code or documents simultaneously without conflicts. It also ensures that a history of changes is maintained, facilitating collaboration and troubleshooting. Like Wian, Nicholas was involved in the creation of weather conditions plots and helped with the wind condition plots. Weather conditions plots were essential for conveying weather conditions data in a visually accessible format. Weather plots helped in understanding how weather conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between weather conditions and crash severity. $\\$
 
 **Satrio Wiradika (300578313)** $\\$
 
-Satrio Wiradika made valuable contributions, particularly in data management and weather data visualization. Satrio's role in importing the data suggests that they were responsible for gathering, cleaning, and preparing the raw data for analysis. Data import is a critical initial step in any data-driven project, as the quality and structure of the data greatly influence the subsequent analysis. Similar to Wian and Nicholas, Satrio worked on weather and wind plots. These plots contributed to the project's overall analysis and helped in visually representing weather patterns or trends. $\\$
+Satrio Wiradika individual contribution to the project focused on data management and weather condition data visualization. Satrio's role in importing the data made them responsible for gathering, cleaning, and preparing the raw data for analysis. Data import was a critical initial step in the project, as the quality and structure of the data greatly influence the subsequent analysis. Similar to Wian and Nicholas, Satrio worked on weather conditions and wind conditions plots. These plots contributed to the project's overall analysis and helped in visually representing weather conditions patterns.
 
 ## References
