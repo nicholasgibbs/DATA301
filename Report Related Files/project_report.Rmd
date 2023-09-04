@@ -33,6 +33,7 @@ library(pander)
 library(knitr)
 library(gridExtra)
 library(patchwork)
+library(treemap)
 ```
 
 ```{r echo = FALSE}
@@ -41,10 +42,9 @@ casdata <- read.csv("../Datasets/casdata.csv")
 
 ## Background and Data
 
-Our project specifically focused on working with the Crash Analysis System (CAS) data sourced from Waka Kotahi, the New Zealand Transport Agency. We accessed the CAS data through the Open Data platform provided by Waka Kotahi offering a comprehensive dataset that is updated monthly containing detailed data about all traffic crashes reported by the NZ Police to Waka Kotahi. This data covers crashes on all New Zealand roadways or places where the public has legal access to a motor vehicle that has occurred across New Zealand since the 1st of January 2000. The dataset only includes crash variables that are non-personal data. 
+Our project specifically focused on working with the Crash Analysis System (CAS) data sourced from Waka Kotahi, the New Zealand Transport Agency. We accessed the CAS data through the Open Data platform provided by Waka Kotahi offering a comprehensive dataset that is updated monthly containing detailed data about all traffic crashes reported by the NZ Police to Waka Kotahi. This data covers crashes on all New Zealand roadways or places where the public has legal access to a motor vehicle that has occurred across New Zealand since the 1st of January 2000. The dataset only includes crash variables that are non-personal data. $\\$
 
-The CAS dataset is of great interest as it can be a resource to uncover insights into the domain of road safety. Specifically in our world where transportation plays a pivotal role in connecting societies, economies, and individuals, being able to comprehend the underlying dynamic of traffic crashes can be really informative. By using the CAS dataset, we are able to analyse the data from traffic crashes offering a different perspective on road safety, crash patterns, and the relationship between these traffic crashes and the geographic factors in New Zealand. At its core, the CAS data is much more than a repository of data, but a reflection of real-world events. Every entry within the dataset encapsulates a moment of impact, actions and consequences, and the complexity of vehicle interactions. By examining this collection of data, researchers will have the possibility to potentially unveil patterns within traffic crashes, and identify the factors that are contributing to their occurrences, to then create strategies to mitigate their impact. Specifically within the CAS dataset, its comprehensive nature is not being limited to a single dimension of analysis. Instead, it offers a vast range of variables that can be analysed. These variables span a wide range from the obvious elements such as weather conditions, vehicle types, and speed limit, to the more nuanced factors such as crash severity, and the region in which the traffic crash occurred. These wide ranges of variables can help researchers to inform and design targeted measures. For instance, if the data reveals a connection between a road with a higher incidence of accidents during certain weather conditions, additional efforts can be put in place to improve signage or alter the speed limits. Even for researchers who are unfamiliar with the dataset itself, they can answer inquiries such as 'What are the primary factors contributing to road crashes in New Zealand?' or 'How do crash rates differ across distinct geographical regions and evolve over time?' 
-
+The CAS dataset is of great interest as it can be a resource to uncover insights into the domain of road safety. Specifically in our world where transportation plays a pivotal role in connecting societies, economies, and individuals, being able to comprehend the underlying dynamic of traffic crashes can be really informative. By using the CAS dataset, we are able to analyse the data from traffic crashes offering a different perspective on road safety, crash patterns, and the relationship between these traffic crashes and the geographic factors in New Zealand. At its core, the CAS data is much more than a repository of data, but a reflection of real-world events. Every entry within the dataset encapsulates a moment of impact, actions and consequences, and the complexity of vehicle interactions. By examining this collection of data, researchers will have the possibility to potentially unveil patterns within traffic crashes, and identify the factors that are contributing to their occurrences, to then create strategies to mitigate their impact. Specifically within the CAS dataset, its comprehensive nature is not being limited to a single dimension of analysis. Instead, it offers a vast range of variables that can be analysed. These variables span a wide range from the obvious elements such as weather conditions, vehicle types, and speed limit, to the more nuanced factors such as crash severity, and the region in which the traffic crash occurred. These wide ranges of variables can help researchers to inform and design targeted measures. For instance, if the data reveals a connection between a road with a higher incidence of accidents during certain weather conditions, additional efforts can be put in place to improve signage or alter the speed limits. Even for researchers who are unfamiliar with the dataset itself, they can answer inquiries such as 'What are the primary factors contributing to road crashes in New Zealand?' or 'How do crash rates differ across distinct geographical regions and evolve over time?. $\\$
 
 The CAS data has numerical and categorical data types, structured with 70 columns and 821744 rows.  Numerical attributes consist of various quantitative measures, including the unique identifier of an area unit, the number of lanes on the crash road, the unique identifier of a mesh block, and the speed limit in force at the crash site at the time of the crash may be a number, or LSZ for a limited speed zone. As to the categorical data, here are the features that we will use to answer our research question:
 
@@ -54,7 +54,6 @@ The CAS data has numerical and categorical data types, structured with 70 column
 * 'region' which identifies the local government (LG) region. The boundaries match territorial local authority (TLA) boundaries. 
 
 ```{r echo = FALSE, results= 'asis'}
-
 selected_cols <- c("crashSeverity", "weatherA", "weatherB", "region")
 
 selected_data <- casdata[, selected_cols]
@@ -74,12 +73,9 @@ test_list = list(summary_table_severity, summary_table_weatherA, summary_table_w
 kable(test_list, booktabs = TRUE, caption="Count of Unique Values on Each Category")
 ```
 
-We found a varying degree of missing information across the variables. While some variables exhibit high degree of completeness, others display more inconsistencies in the data. This does not necessarily imply a structured pattern, such as missing data clustered in specific time periods or geographic regions, but rather the lack of information that can be collected about the specific traffic crash. When specifically looking at the variables that we want to analyse, we can see that there is no missing data for crash severity, weatherA, and weatherB. 
-
-However, for the region variable, there is a high level of missing data with 3188 observations missing. This can be translated to a percentage of missing data of 0.0038796. In terms of errors within the specific variables that we wanted to analyse, there does not seem to be any errors. The observations of the different categories are consistent and there are no observations for categories in which they appear to be errors. 
+We found a varying degree of missing information across the variables. While some variables exhibit high degree of completeness, others display more inconsistencies in the data. This does not necessarily imply a structured pattern, such as missing data clustered in specific time periods or geographic regions, but rather the lack of information that can be collected about the specific traffic crash. When specifically looking at the variables that we want to analyse, we can see that there is no missing data for crash severity, weatherA, and weatherB. However, for the region variable, there is a level of missing data with 3188 observations missing. This can be translated to a percentage of missing data of 0.0038796. In terms of errors within the specific variables that we wanted to analyse, there does not seem to be any errors. The observations of the different categories are consistent and there are no observations for categories in which they appear to be errors.  
 
 ```{r echo = FALSE}
-
 missing_counts <- colSums(is.na(casdata[selected_cols]))
 total_rows <- nrow(casdata)
 missing_percentages <- (missing_counts / total_rows)
@@ -94,17 +90,17 @@ kable(list(summary_table, summary_table_region), format = "markdown", caption = 
 
 ## Ethics, Privacy and Security
 
-Ethical considerations hold an important role in our project as we delve into analysing the CAS dataset. While the dataset can be an extraordinary resource in helping analyse variables and generate insights, it presents us with ethical considerations that we must address. Given the sensitive nature of crash data, it is crucial that we exercise discretion in sharing insights that could inadvertently identify individuals involved in accidents. Finding a balance between informative reporting and preserving privacy is essential. Additionally, presenting the data in a way that avoids overemphasising accidents while focusing on generating useful insights is ethically crucial. Acknowledging the broader implications of our possible findings, particularly when suggesting insights, can ensure that our insights contribute positively to aspects such as road safety without causing much distress to those affected by road accidents. Another ethical responsibility lies in the manner in which we choose to convey the data to our audience. Committing to ethical practices ensures that we refrain from any form of sensationalism that can arise from the presentation of accident-related information. Instead, our approach centers on accentuating the importance for road safety improvements. This demands that the design of our communication is focused on the goal of mitigating accidents. We need to approach the task of suggesting insights with a heightened sense of responsibility. Our acknowledgement of the potential impact that our insights could have on road safety measures ensures a positive change without causing unwarranted distress to those who have been directly or indirectly affected by traffic crashes. Our project can be seen from an aspect of social responsibility, where every action we make in our analysis is aligned with the overarching goal of road safety and societal well-being. 
+Ethical considerations hold an important role in our project as we delve into analysing the CAS dataset. While the dataset can be an extraordinary resource in helping analyse variables and generate insights, it presents us with ethical considerations that we must address. Given the sensitive nature of crash data, it is crucial that we exercise discretion in sharing insights that could inadvertently identify individuals involved in accidents. Finding a balance between informative reporting and preserving privacy is essential. Additionally, presenting the data in a way that avoids overemphasising accidents while focusing on generating useful insights is ethically crucial. Acknowledging the broader implications of our possible findings, particularly when suggesting insights, can ensure that our insights contribute positively to aspects such as road safety without causing much distress to those affected by road accidents. Another ethical responsibility lies in the manner in which we choose to convey the data to our audience. Committing to ethical practices ensures that we refrain from any form of sensationalism that can arise from the presentation of accident-related information. Instead, our approach centers on accentuating the importance for road safety improvements. This demands that the design of our communication is focused on the goal of mitigating accidents. We need to approach the task of suggesting insights with a heightened sense of responsibility. Our acknowledgement of the potential impact that our insights could have on road safety measures ensures a positive change without causing unwarranted distress to those who have been directly or indirectly affected by traffic crashes. Our project can be seen from an aspect of social responsibility, where every action we make in our analysis is aligned with the overarching goal of road safety and societal well-being. $\\$
 
-Privacy concerns are also a consideration when dealing with the CAS dataset. Even though there is no personal information within the dataset, privacy concerns can still exist. Even if de-identified, there is still potential for the data to be linked back to the specific individual or disclose details into their personal life. The nature of the CAS dataset necessitates a comprehensive approach to ensure the mitigation of privacy risks. Anonymisation techniques such as data aggregation, suppression, and pseudonymisation, might have been employed to safeguard the identities of those mentioned in the dataset. However, the effectiveness of these techniques is not always absolute, and the complicated connections between the variables in the dataset could potentially allow for the re-identification of individuals, compromising their privacy.  Furthermore, the potential for unintended consequences emerges when privacy concerns are not thoroughly addressed. The insights drawn from our analysis might inadvertently perpetuate biases. Ensuring that care is taken to ensure that the analytical process respects the privacy of the individuals involved in the dataset is a must. In light of these considerations, it is crucial to adopt a comprehensive privacy framework that encompasses the technical safeguards but also the ethical guidelines. Collaboration with ethics could help in identifying potential pitfalls, and the transparency in the methods that are used for data analysis even if indirectly are steps in ensuring privacy through the information encapsulated within the dataset. 
+Privacy concerns are also a consideration when dealing with the CAS dataset. Even though there is no personal information within the dataset, privacy concerns can still exist. Even if de-identified, there is still potential for the data to be linked back to the specific individual or disclose details into their personal life. The nature of the CAS dataset necessitates a comprehensive approach to ensure the mitigation of privacy risks. Anonymisation techniques such as data aggregation, suppression, and pseudonymisation, might have been employed to safeguard the identities of those mentioned in the dataset. However, the effectiveness of these techniques is not always absolute, and the complicated connections between the variables in the dataset could potentially allow for the re-identification of individuals, compromising their privacy.  Furthermore, the potential for unintended consequences emerges when privacy concerns are not thoroughly addressed. The insights drawn from our analysis might inadvertently perpetuate biases. Ensuring that care is taken to ensure that the analytical process respects the privacy of the individuals involved in the dataset is a must. In light of these considerations, it is crucial to adopt a comprehensive privacy framework that encompasses the technical safeguards but also the ethical guidelines. Collaboration with ethics could help in identifying potential pitfalls, and the transparency in the methods that are used for data analysis even if indirectly are steps in ensuring privacy through the information encapsulated within the dataset. $\\$
 
 To maintain the security of our project data and results, several steps can be taken, even though they have not been implemented for the purpose of this report. One of the foremost strategies for safeguarding sensitive information is the implementation of data encryption protocols. By encrypting data both during storage and transmission, we can prevent potential breaches and unauthorised access attempts. Encryption converts the data into an unreadable format. Without the appropriate decryption key, it is extremely challenging for malicious actors to interpret the information even if they manage to gain access. Additionally, controlling and restricting access to the data repository is crucial. This can be achieved through the deployment of secure authentication and authorisation mechanisms. By implementing strong authentication methods such as multi-factor authentication and ensuring that only authorised personnel possess the necessary credentials, we can effectively prevent unauthorised entry to the data and results. Authorisation mechanisms can be employed to establish varying levels of access privileges based on roles within the project team, thereby minimizing the risk of inadvertent data exposure. In the event that an incident occurs such as data corruption, hardware failures, or cyberattacks, regular data backups emerge as another critical line of defence. Regularly backing up project data is a reliable means of preventing data loss and facilitating swift recovery. However, it is essential to store these backups in a secure manner. Adopting a best practice approach involves storing backups in off-site locations that are well-protected and disconnected from the primary network to safeguard against potential simultaneous compromise of both primary and backup data. Furthermore, ensuring that the secure collaboration among the project stakeholders is vital. Securing the data-sharing methods plays another crucial role in maintaining data confidentiality while enabling efficient teamwork. Secure file-sharing platforms equipped with end-to-end encryption and access controls provide a secure environment for sharing sensitive documents and information. Virtual private networks can also be employed to establish encrypted communication channels, particularly useful when collaborating with remote team members or external partners.
 
 ## Exploratory Data Analysis
 
-**Exploring the Difference of Weather Conditions Across All the Regions in New Zealand** 
+**Exploring the Difference of Weather Conditions Across All the Regions in New Zealand** $\\$ 
 
-Adverse weather conditions play a crucial role in shaping the dynamics of road safety, significantly amplifying the potential for accidents to escalate into fatal or critical events. These environmental factors introduce a complex set of challenges that drivers must navigate through, demanding heightened vigilance, skill, and adaptability. The impact of severe weather encompassing heavy rainfall, snow, and fog, extends beyond just the inconvenience; it directly interacts with the systems that govern road safety, creating an environment that demands caution from vehicle users.
+Adverse weather conditions play a crucial role in shaping the dynamics of road safety, significantly amplifying the potential for accidents to escalate into fatal or critical events. These environmental factors introduce a complex set of challenges that drivers must navigate through, demanding heightened vigilance, skill, and adaptability. The impact of severe weather encompassing heavy rainfall, snow, and fog, extends beyond just the inconvenience; it directly interacts with the systems that govern road safety, creating an environment that demands caution from vehicle users. According to a study conducted in 2019 [@riskofroad2019], the relative accident risks are increased for poor road weather conditions; however, they are highest for icy rain and slippery and very slippery road conditions. Especially those stemming from extreme weather, are more likely to result in grave consequences compared to accidents unaffected by adverse weather. $\\$
 
 ```{r collapse = TRUE, message = FALSE, echo = FALSE}
 selected_data <- casdata[, c("crashSeverity", "weatherA", "region")]
@@ -120,23 +116,21 @@ regions <- regions[0:16]
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
 regions <- unique(grouped_data$region)
-
 grouped_data$region_facet <- factor(grouped_data$region, levels = regions)
 ```
 
-```{r fig.height =6, fig.width = 12, echo = FALSE, message = FALSE, warning = FALSE, fig.cap="The Distribution of Weather Conditions in the Regions of New Zealand"}
-ggplot(grouped_data, aes(x = region, fill = weatherA)) +
+```{r fig.height = 6, fig.width = 12, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "The Distribution of Weather Conditions in the Regions of New Zealand"}
+ggplot(casdata, aes(x = region, fill = weatherA)) +
   geom_bar(stat = "count") +
   scale_x_discrete(labels = function(x) gsub(" Region", "", x)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Insert the key points of the plot above
+The provided data presents weather-related information categorized by region. Several key patterns and conclusions can be drawn from this dataset. Firstly, the "Fine" weather condition is prevalent across most regions, with Auckland Region, Bay of Plenty Region, Canterbury Region, and many others reporting substantial counts under this category. Conversely, "Hail or Sleet" conditions are relatively rare across all regions, indicating infrequent occurrences of such extreme weather events. Secondly, "Heavy rain" and "Light rain" are prevalent conditions in many regions, suggesting a significant amount of precipitation is experienced throughout New Zealand. These regions include Auckland, Canterbury, Gisborne, Hawke's Bay, Manawatū-Whanganui, Northland, Otago, Taranaki, Tasman, Waikato, Wellington, and West Coast. Thirdly, "Mist or Fog" conditions are reported in various regions, but the counts are relatively lower compared to other weather conditions. Snowfall is infrequent, mainly occurring in limited quantities in certain regions like Auckland, Bay of Plenty, Canterbury, Gisborne, Hawke's Bay, Manawatū-Whanganui, Nelson, Otago, Southland, Taranaki, Tasman, Waikato, Wellington, and West Coast. Lastly, the "Unknown" category suggests that in some instances, weather conditions were not clearly identified or recorded. Overall, this data highlights the diverse weather conditions experienced across different regions in New Zealand, with variations in the prevalence of specific weather patterns. $\\$
 
 **Is There Any Difference on the Level of Each Crash Severity Between the Regions?**
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, fig.cap="Percentage Grouped Bar Chart of Crash Severity by Region"}
-# Create the panel bar chart
+```{r echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Percentage Grouped Bar Chart of Crash Severity by Region"}
 ggplot(as.data.frame(prop.table(table(casdata[c("region", "crashSeverity")]), 1) * 100) %>% group_by(region), aes(x = region, fill = crashSeverity, y = Freq)) +
   geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.7) +
   labs(x = "Region", y = "Percentage") +
@@ -144,31 +138,24 @@ ggplot(as.data.frame(prop.table(table(casdata[c("region", "crashSeverity")]), 1)
   coord_flip()
 ```
 
-**Exploring the effect of wind on the severity of vehicle crashes** 
+The plot of the percentage of crash severity by region in New Zealand, allows us to see how the distribution varies between regions. Specifically, it presents a breakdown of road crash severities across the various regions in New Zealand. There is a notable variation in crash severity patterns across New Zealand regions, with some regions experiencing a higher prevalence of non-injury and minor crashes, while others have a relatively higher proportion of serious and fatal crashes. These differences may be influenced by factors such as local road conditions, traffic density, and enforcement efforts. Auckland stands out with a high percentage 75.01% of non-injury crashes, suggesting a higher frequency of less severe accidents. Serious and fatal crashes are comparatively lower. Bay of Plenty also has a substantial share of non-injury crashes 70.96% but a somewhat higher percentage of minor crashes 21.54% compared to Auckland, making it relatively safer. Canterbury has a significant number of non-injury crashes 64.11%, but it also experiences a higher proportion of serious crashes 7.51% compared to some other regions. Gisborne and Hawke's Bay both prioritize dealing with less severe incidents, with a focus on non-injury and minor crashes, resulting in lower percentages of serious and fatal crashes. Northland has a relatively higher percentage of serious crashes 7.53%, indicating a potential need for improved safety measures. Otago experiences a higher percentage of both minor and serious crashes compared to other regions, suggesting a need for heightened safety awareness. Tasman has a lower percentage of fatal and serious crashes, indicating a safer driving environment with a focus on minor and non-injury incidents. These regional variations may be influenced by factors such as local road conditions, traffic density, and law enforcement efforts. Further analysis may be needed to understand the underlying causes. $\\$
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap="Crash Severity Across All Regions by Strong Winds"}
+**Exploring the effect of wind on the severity of vehicle crashes** $\\$
 
+Strong winds can play a role in increasing the risk of accidents and potentially be a cause of fatal or serious vehicle crashes. Strong winds can pose multiple hazards on the road. High winds can lead to sudden obstacles on the road and can also turn loose debris like rock into projectiles. High winds can also reduce vehicle control making it harder to stay in lanes safely or even be able to push large vehicles off the side of the road. According to this study in 2019 [@bhattachan2019characterizing], the fatality rate related to winds is almost twice as high as the rate in accident caused my weather conditions other than winds. This might suggest that wind-related accidents tend to be more lethal compared to accidents caused my other type of weather. 
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap = "Crash Severity Across All Regions by Strong Winds"}
 crash_sev_weather <- casdata %>%
   filter(weatherB == "Strong wind") %>%
   group_by(weatherB, crashSeverity) %>%
   summarise(count = n(), .groups = "drop") %>%
   ungroup()
 
-ggplot(crash_sev_weather, aes(x = crashSeverity, y = count, fill = crashSeverity)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ weatherB, scales = "free_x") +
-  labs(x = "Crash Severity", y = "Count", fill = "Severity") +
-  scale_fill_manual(values = c("Non-Injury Crash" = "blue",
-                               "Minor Crash" = "green",
-                               "Serious Crash" = "orange",
-                               "Fatal Crash" = "red")) +
-  theme_minimal() +
-  theme(legend.position = "right")
-
-
+treemap(crash_sev_weather,
+        index="crashSeverity",
+        vSize="count",
+        type="index")
 ```
-
-Strong winds can play a role in increasing the risk of accidents and potentially be a cause of fatal or serious vehicle crashes. Strong winds can pose multiple hazards on the road. High winds can lead to sudden obstacles on the road and can also turn loose debris like rock into projectiles. High winds can also reduce vehicle control making it harder to stay in lanes safely or even be able to push large vehicles off the side of the road. According to this study in 2019 [@bhattachan2019characterizing], the fatality rate related to winds is almost twice as high as the rate in accident caused my weather conditions other than winds. This might suggest that wind-related accidents tend to be more lethal compared to accidents caused my other type of weather. 
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE}
 strong_wind_data <- casdata %>%
@@ -183,7 +170,9 @@ kable(crash_severity_counts, format = "markdown",
       caption = "Counts of Crash Severity Levels for Strong Wind Cases")
 ```
 
-```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap="Crash Severity in Each Region for Strong Wind Condition", results='hide', fig.keep='all'}
+The data plotted in Figure 3 and displayed in Table 3 presents a breakdown of crash severity levels in cases affected by strong winds. The most prevalent outcome is non-injury crashes, with a count of 9489 cases, indicating that strong wind conditions more commonly result in accidents where no injuries are reported. Following this, minor crashes account for 3632 cases, suggesting a substantial number of incidents with minor injuries or property damage. Serious crashes are less frequent, with 1074 cases, indicating that strong winds can lead to more severe accidents, but these are relatively rare in comparison to non-injury and minor crashes. The least frequent outcome is fatal crashes, with a count of 194, signifying that fatalities due to strong wind-related accidents are relatively infrequent. In conclusion, this data underscores the importance of caution and preparedness during strong wind conditions, as they can lead to a range of crash severities, with non-injury and minor crashes being the most common outcomes, while serious and fatal crashes are less frequent but still significant concerns for road safety. $\\$
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, collapse = TRUE, fig.cap = "Crash Severity in Each Region for Strong Wind Condition", results = 'hide', fig.keep = 'all'}
 crash_sev_weather <- casdata %>%
   filter(weatherB == "Strong wind") %>%
   group_by(weatherB, crashSeverity, region) %>%
@@ -206,7 +195,7 @@ ggplot(crash_sev_weather, aes(x = weatherB, y = count, fill = crashSeverity)) +
   theme(legend.position = "right")
 ```
 
-
+The data plotted in Figure 4 reveals the crash severity in various regions during strong wind conditions. In Auckland, strong winds resulted in 27 fatal crashes, while Bay of Plenty had 5, Canterbury had 24, Gisborne had 2, and Hawke's Bay had 12 fatal crashes. Manawatū-Whanganui experienced 26 fatal crashes, Marlborough had 5, Northland had 8, Otago had 18, and Southland had 14 fatal crashes during strong winds. In contrast, minor crashes during strong wind conditions were more prevalent, with Auckland reporting 789, Bay of Plenty 152, Canterbury 340, Gisborne 42, Hawke's Bay 109, and Manawatū-Whanganui 317. The trend continued with other regions, including Nelson 22, Northland 190, Otago 275, Southland 227, Taranaki 127, Tasman 29, Waikato 368, Wellington 550, and West Coast 30. Furthermore, non-injury crashes were significantly higher in frequency, with Auckland leading at 2271, followed by Bay of Plenty at 418, Canterbury at 760, Gisborne at 130, and others. Serious crashes were less common, with Auckland having 198, Bay of Plenty 43, and Canterbury 116. Gisborne, Hawke's Bay, Manawatū-Whanganui, and other regions also reported varying numbers of serious crashes. These data suggest that strong wind conditions generally lead to a higher incidence of minor and non-injury crashes, while fatal and serious crashes are relatively rarer occurrences. $\\$
 
 **Comparing light rain to strong winds**
 
@@ -243,23 +232,23 @@ plot2 <- ggplot(crash_sev_winds, aes(x = weatherB, y = count, fill = crashSeveri
   theme_minimal() +
   theme(legend.position = "right")
 
-grid.arrange(plot1, plot2, ncol=2)
+grid.arrange(plot1, plot2, ncol = 2)
 ```
 
-Light rain is present in 5 times more fatal accidents than where strong winds were present. 
+Further analysis of crash severity data in different regions under frost and strong wind conditions provides additional insights. In frosty weather, there were 86 fatal crashes, indicating a significant risk to life, while strong wind conditions led to 194 fatal crashes, suggesting a higher fatality rate under strong winds. However, frost conditions also saw 604 serious crashes, which is noteworthy and potentially indicative of more severe accidents overall. In contrast, strong wind conditions had 1,074 serious crashes, indicating a higher propensity for serious accidents. Nonetheless, frosty weather conditions yielded a substantially larger number of non-injury crashes at 6,064 compared to 9,489 non-injury crashes during strong wind conditions. This indicates that while strong winds may lead to more severe accidents, frosty weather results in a higher number of accidents without injuries. 
 
 ## Individual Contributions
 
-**Wian Lusse (300489294)**
+**Wian Lusse (300489294)** $\\$
 
+Wian Lusse made significant contributions to the project, particularly in the area of data analysis and visualization. Their role primarily involved handling references and creating wind plots. Wian's work on managing references was crucial for the project. They likely organized and cited sources, ensuring that the project was well-researched and credible. Proper referencing is vital in any research or data analysis project to give credit to original sources and avoid plagiarism. Also helping create wind plots suggests that Wian was involved in visualizing weather data related to wind patterns. Wind plots were essential in understanding how wind conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between wind types and crash severity. $\\$
 
+**Nicholas Gibbs (300579601)** $\\$
 
-**Nicholas Gibbs (300579601)**
+Nicholas Gibbs played a pivotal role in setting up and maintaining the project's version control and contributed to weather data visualization. The creation of a GitHub repository indicates that they were responsible for managing the project's version control. This is a critical task in collaborative projects as it allows team members to work on code or documents simultaneously without conflicts. It also ensures that a history of changes is maintained, facilitating collaboration and troubleshooting. Like Wian, Nicholas was involved in the creation of weather plots and helped in the wind plots. Weather plots are essential for conveying complex weather data in a visually accessible format. Weather plots were essential in understanding how wind conditions affect crash severity, and in understanding any relationships or evidence in suggesting a difference between weather types and crash severity. $\\$
 
+**Satrio Wiradikas** $\\$
 
-
-**Satrio Wiradikas**
-
-
+Satrio Wiradikas made valuable contributions, particularly in data management and weather data visualization. Satrio's role in importing the data suggests that they were responsible for gathering, cleaning, and preparing the raw data for analysis. Data import is a critical initial step in any data-driven project, as the quality and structure of the data greatly influence the subsequent analysis. Similar to Wian and Nicholas, Satrio worked on weather and wind plots. These plots contributed to the project's overall analysis and helped in visually representing weather patterns or trends. $\\$
 
 ## References
